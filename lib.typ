@@ -1,7 +1,5 @@
-#import "@preview/hydra:0.6.2": *
 // This function gets your whole document as its `body` and formats
 // it as a simple book.
-hydra(book: true)
 #let book(
   // The book's title.
   title: [Book title],
@@ -115,22 +113,34 @@ hydra(book: true)
       if query(heading).any(it => it.location().page() == i) {
         return
       }
-      let before = query(selector(heading).before(here()))
-      if before != () {
+
+      // Get the short chapter title from metadata
+      let short-title = {
+        let meta-query = query(selector(metadata).before(here()))
+          .filter(it => it.value != none and it.label == <short>)
+        if meta-query.len() > 0 {
+          meta-query.last().value
+        } else {
+          // Fallback to regular heading if no metadata found
+          let before = query(selector(heading).before(here()))
+          if before != () {
+            before.last().body
+          }
+        }
+      }
+
+      if short-title != none {
         set text(0.9em)
-        let header = smallcaps(before.last().body)
-        let title = smallcaps(title)
-        let author = text(style: "italic", author)
-      set heading(numbering: "1.1")
-      show heading.where(level: 1): it => pagebreak(weak: true) + it
+        let chapter-header = smallcaps(short-title)
+        let book-title = smallcaps(title)
+        set heading(numbering: "1.1")
+        show heading.where(level: 1): it => pagebreak(weak: true) + it
         grid(
           columns: (1fr, 10fr, 1fr),
           align: (left, center, right),
           row-gutter: 0pt,
           if calc.even(i) [#i],
-          // Swap `title` and `chapter title` around, or possibly with `heading`
-          // to change what is displayed on each side.
-          if calc.even(i) { title } else { hydra(2) },
+          if calc.even(i) { book-title } else { chapter-header },
           if calc.odd(i) [#i],
         )
         v(-0.4em)
