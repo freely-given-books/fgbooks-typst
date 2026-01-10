@@ -1,0 +1,14 @@
+[package]
+name = "fgbooks"
+version = "0.1.0"
+entrypoint = "lib.typ"
+authors = ["FreelyGivenBooks"]
+license = "CC0"
+description = "Create an effectively laid out 6x9 print book."
+categories = ["book"]
+
+[template]
+path = "template"
+entrypoint = "main.typ"
+# thumbnail = "thumbnail.png"
+# https://github.com/typst/packages/blob/main/docs/manifest.md
