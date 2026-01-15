@@ -88,7 +88,32 @@
   set par(spacing: 1.5em, leading: 0.78em, first-line-indent: 12pt, justify: true)
 
   // Start with a chapter outline.
-  outline(title: [Chapters])
+  // Use short titles in the outline if available
+  {
+    show outline.entry.where(level: 2): it => {
+      let loc = it.element.location()
+      let all-short = query(<short>)
+      let all-h2 = query(heading.where(level: 2))
+
+      // Find this heading's index in the list of all level 2 headings
+      let idx = all-h2.position(h => h.location() == loc)
+
+      // Get the corresponding short title by index
+      let title = if idx != none and idx < all-short.len() {
+        all-short.at(idx).value
+      } else {
+        it.element.body
+      }
+
+      link(loc)[
+        #title
+        #box(width: 1fr, it.fill)
+        #loc.page()
+        #linebreak()
+      ]
+    }
+    outline(title: [Chapters])
+  }
   pagebreak(to: "odd", weak: true)
 
   set quote(block: true)
