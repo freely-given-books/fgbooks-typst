@@ -22,6 +22,9 @@
   page-height: 9in,
   page-margin: (bottom: 0.75in, top: 0.5in, outside: 0.75in, inside: 0.875in),
 
+  // Make outline optional - good for small books with no chapters  
+  show-outline: true,
+
   // The book's content.
   body,
 ) = {
@@ -119,7 +122,11 @@
     }
     outline(title: [Chapters])
   }
-  pagebreak(to: "odd", weak: true)
+  // In the template, wrap the outline section:
+  if show-outline [
+    #pagebreak(to: "odd", weak: true)
+    #outline()
+  ]
 
   set quote(block: true)
 
