@@ -122,6 +122,7 @@
     }
     outline(title: [Chapters])
   }
+  pagebreak(to: "odd", weak: true)
 
   set quote(block: true)
 
