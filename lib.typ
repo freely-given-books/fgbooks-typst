@@ -17,6 +17,11 @@
   // Preface by author
   preface: none,
 
+  // Page dimensions
+  page-width: 6in,
+  page-height: 9in,
+  page-margin: (bottom: 0.75in, top: 0.5in, outside: 0.75in, inside: 0.875in),
+
   // The book's content.
   body,
 ) = {
@@ -47,9 +52,9 @@
 
   // Configure the page properties.
   set page(
-    width: 6in,
-    height: 9in,
-    margin: (bottom: 0.75in, top: 0.5in, outside: 0.75in, inside: 0.875in),
+    width: page-width,
+    height: page-height,
+    margin: page-margin,
   )
 
   // The first page.
@@ -120,9 +125,9 @@
 
   // Configure page properties.
   set page(
-    width: 6in,
-    height: 9in,
-    margin: (bottom: 0.75in, top: 0.6in, outside: 0.75in, inside: 0.875in),
+    width: page-width,
+    height: page-height,
+    margin: (..page-margin, top: 0.6in),
     // The header always contains the book chapter title on odd pages and
     // the book title on even pages, unless
     // - we are on an empty page
