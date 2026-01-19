@@ -97,7 +97,7 @@
 
   // Start with a chapter outline.
   // Use short titles in the outline if available
-  {
+  if show-outline {
     show outline.entry.where(level: 2): it => {
       let loc = it.element.location()
       let all-short = query(<short>)
@@ -122,11 +122,6 @@
     }
     outline(title: [Chapters])
   }
-  // In the template, wrap the outline section:
-  if show-outline [
-    #pagebreak(to: "odd", weak: true)
-    #outline()
-  ]
 
   set quote(block: true)
 
