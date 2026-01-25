@@ -150,7 +150,7 @@
 
       // Are we on a page that starts a chapter?
       let i = here().page()
-      if query(heading).any(it => it.location().page() == i) {
+      if query(heading.where(level: 2)).any(it => it.location().page() == i) {
         return
       }
 
@@ -161,8 +161,8 @@
         if meta-query.len() > 0 {
           meta-query.last().value
         } else {
-          // Fallback to regular heading if no metadata found
-          let before = query(selector(heading).before(here()))
+          // Fallback to chapter heading if no metadata found
+          let before = query(selector(heading.where(level: 2)).before(here()))
           if before != () {
             before.last().body
           }
