@@ -3,9 +3,10 @@
 #let book(
   // The book's title.
   title: [Book title],
+  subtitle: none,
 
   // The book's author.
-  author: "Author",
+  author: none,
 
   // A dedication to display on the third page.
   dedication: none,
@@ -48,7 +49,7 @@
   }
 
   // Set the document's metadata.
-  set document(title: title, author: author)
+  set document(title: title, author: if author != none { author } else { () })
 
   // set text(font: "Libertinus Serif")
   set text(font: "Liberation Serif", size: 12pt)
@@ -66,7 +67,13 @@
   page(align(center + horizon, {
     std.title()
     v(2em, weak: true)
-    text(1.6em, author)
+    if subtitle != none {
+      text(1.0em, subtitle)
+    }
+    v(2em, weak: true)
+    if author != none {
+      text(1.6em, author)
+    }
   }))
 
   // Display publisher info at the bottom of the second page.
