@@ -105,10 +105,15 @@
   // Start with a chapter outline.
   // Use short titles in the outline if available
   if show-outline {
+    show outline.entry.where(level: 1): it => {
+      v(0.5em)
+      strong(it)
+    }
     show outline.entry.where(level: 2): it => {
       let loc = it.element.location()
       let all-short = query(<short>)
       let all-h2 = query(heading.where(level: 2))
+      let has-h1 = query(heading.where(level: 1)).len() > 0
 
       // Find this heading's index in the list of all level 2 headings
       let idx = all-h2.position(h => h.location() == loc)
@@ -120,14 +125,17 @@
         it.element.body
       }
 
-      link(loc)[
+      // Indent if level 1 headings exist
+      let indent = if has-h1 { 1.5em } else { 0em }
+
+      pad(left: indent, link(loc)[
         #title
         #box(width: 1fr, it.fill)
         #loc.page()
         #linebreak()
-      ]
+      ])
     }
-    outline(title: [Chapters])
+    outline(title: [Chapters], depth: 2)
   }
   pagebreak(to: "odd", weak: true)
 
