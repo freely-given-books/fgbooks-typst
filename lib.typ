@@ -106,8 +106,12 @@
   // Use short titles in the outline if available
   if show-outline {
     show outline.entry.where(level: 1): it => {
-      v(0.5em)
-      strong(it)
+      let loc = it.element.location()
+      v(1em)
+      text(1.1em, weight: 600, smallcaps(link(loc, it.element.body)))
+      h(1fr)
+      text(1.1em, weight: 600, link(loc, str(loc.page())))
+      linebreak()
     }
     show outline.entry.where(level: 2): it => {
       let loc = it.element.location()
@@ -196,6 +200,29 @@
       }
     },
   )
+
+  // Configure part/section headings (level 1).
+  show heading.where(level: 1): it => {
+    // Part pages start on odd pages
+    detectable-pagebreak(to: "odd")
+
+    // Create the heading numbering
+    let number = if it.numbering != none {
+      counter(heading).display(it.numbering)
+    }
+
+    page(header: none, align(center + horizon, {
+      if number != none {
+        text(14pt, tracking: 0.2em, upper[Part #number])
+        v(1.5em)
+      }
+      line(length: 30%, stroke: 0.75pt)
+      v(1em)
+      text(28pt, weight: 700, smallcaps(it.body))
+      v(1em)
+      line(length: 30%, stroke: 0.75pt)
+    }))
+  }
 
   // Configure chapter headings.
   show heading.where(level: 2): it => {
