@@ -15,6 +15,9 @@
   // display on the second page.
   publishing-info: none,
 
+  // Foreword (typically by someone other than the author)
+  foreword: none,
+
   // Preface by author
   preface: none,
 
@@ -61,19 +64,38 @@
     margin: page-margin,
   )
 
-  // The first page.
-  show std.title: set text(size: 22pt)
-  show std.title: strong
+  // The first page - title page with elegant styling
   page(align(center + horizon, {
-    std.title()
-    v(2em, weak: true)
+    // Decorative top ornament
+    text(1.2em, tracking: 0.5em, [~ ~ ~])
+    v(2em)
+
+    // Title in prominent smallcaps
+    text(26pt, weight: 700, tracking: 0.1em, smallcaps(title))
+
+    // Decorative line under title
+    v(1.5em)
+    line(length: 40%, stroke: 0.75pt)
+    v(1.5em)
+
+    // Subtitle in italics
     if subtitle != none {
-      text(1.0em, subtitle)
+      text(1.1em, style: "italic", subtitle)
+      v(2em)
     }
-    v(2em, weak: true)
+
+    // Decorative flourish before author
+    text(0.9em, tracking: 0.3em, sym.diamond.filled)
+    v(1.5em)
+
+    // Author in elegant smallcaps
     if author != none {
-      text(1.6em, author)
+      text(1.3em, tracking: 0.15em, smallcaps(author))
     }
+
+    // Bottom decorative element
+    v(3em)
+    text(1.2em, tracking: 0.5em, [~ ~ ~])
   }))
 
   // Display publisher info at the bottom of the second page.
@@ -87,17 +109,26 @@
   if dedication != none {
     v(15%)
     align(center, strong(dedication))
+    pagebreak(to: "odd")
   }
 
-  // Books like their empty pages.
-  pagebreak(to: "odd")
+  // Display the foreword with proper formatting
+  if foreword != none {
+    pagebreak(to: "odd", weak: true)
+    v(5%)
+    align(center, text(22pt, weight: 700)[Foreword])
+    v(2.5em)
+    set par(spacing: 1.5em, leading: 0.78em, first-line-indent: 0pt, justify: true)
+    foreword
+  }
 
   if preface != none {
+    pagebreak(to: "odd", weak: true)
     preface
   }
 
-  // Books like their empty pages.
-  pagebreak(to: "odd")
+  // Ensure body starts on odd page
+  pagebreak(to: "odd", weak: true)
 
   // Configure paragraph properties.
   set par(spacing: 1.5em, leading: 0.78em, first-line-indent: 12pt, justify: true)
@@ -160,8 +191,11 @@
         return
       }
 
-      // Are we on a page that starts a chapter?
+      // Are we on a page that starts a part or chapter?
       let i = here().page()
+      if query(heading.where(level: 1)).any(it => it.location().page() == i) {
+        return
+      }
       if query(heading.where(level: 2)).any(it => it.location().page() == i) {
         return
       }
@@ -203,7 +237,7 @@
 
   // Configure part/section headings (level 1).
   show heading.where(level: 1): it => {
-    // Part pages start on odd pages
+    // Always start on odd pages (recto).
     detectable-pagebreak(to: "odd")
 
     // Create the heading numbering
@@ -211,17 +245,26 @@
       counter(heading).display(it.numbering)
     }
 
-    page(header: none, align(center + horizon, {
-      if number != none {
-        text(14pt, tracking: 0.2em, upper[Part #number])
-        v(1.5em)
-      }
-      line(length: 30%, stroke: 0.75pt)
-      v(1em)
-      text(28pt, weight: 700, smallcaps(it.body))
-      v(1em)
-      line(length: 30%, stroke: 0.75pt)
-    }))
+    // Part page with decorative styling
+    page(header: none, {
+      v(1fr)
+      align(center, {
+        if number != none {
+          text(14pt, tracking: 0.2em, upper[Part #number])
+          v(1.5em)
+        }
+        line(length: 30%, stroke: 0.75pt)
+        v(1em)
+        text(28pt, weight: 700, smallcaps(it.body))
+        v(1em)
+        line(length: 30%, stroke: 0.75pt)
+      })
+      v(1fr)
+      // Mark for detecting blank verso after part page
+      [#metadata(none) <empty-page-start>]
+    })
+    pagebreak(to: "odd", weak: true)
+    [#metadata(none) <empty-page-end>]
   }
 
   // Configure chapter headings.
