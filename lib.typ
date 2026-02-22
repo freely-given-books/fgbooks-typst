@@ -118,7 +118,7 @@
     v(5%)
     align(center, text(22pt, weight: 700)[Foreword])
     v(2.5em)
-    set par(spacing: 1.5em, leading: 0.78em, first-line-indent: 0pt, justify: true)
+    set par(spacing: 0.78em, leading: 0.78em, first-line-indent: 0pt, justify: true)
     foreword
   }
 
@@ -131,7 +131,7 @@
   pagebreak(to: "odd", weak: true)
 
   // Configure paragraph properties.
-  set par(spacing: 1.5em, leading: 0.78em, first-line-indent: 12pt, justify: true)
+  set par(spacing: 0.78em, leading: 0.78em, first-line-indent: 12pt, justify: true)
 
   // Start with a chapter outline.
   // Use short titles in the outline if available
