@@ -24,7 +24,7 @@
   // Page dimensions
   page-width: 5.5in,
   page-height: 8.5in,
-  page-margin: (bottom: 0.75in, top: 0.75in, outside: 0.6in, inside: 0.875in),
+  page-margin: (bottom: 0.75in, top: 0.75in, outside: 0.75in, inside: 0.875in),
 
   // Make outline optional - good for small books with no chapters  
   show-outline: true,
