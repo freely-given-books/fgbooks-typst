@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.2
+
+2026-05-31
+
+* level 4 header improvement
+
 ## 0.5.0
 
 2026-02-01

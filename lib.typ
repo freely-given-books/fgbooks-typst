@@ -296,6 +296,18 @@
     v(0.75em)
   }
 
+  // Configure level 4 headings.
+  show heading.where(level: 4): it => {
+    let number = if it.numbering != none {
+      counter(heading).display(it.numbering)
+      h(7pt, weak: true)
+    }
+
+    v(0.75em)
+    text(11pt, weight: 700, [#number #it.body])
+    v(0.4em)
+  }
+
   show heading: set text(11pt, weight: 400)
 
   body
