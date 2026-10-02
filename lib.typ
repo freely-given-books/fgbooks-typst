@@ -61,19 +61,38 @@
     margin: page-margin,
   )
 
-  // The first page.
-  show std.title: set text(size: 22pt)
-  show std.title: strong
+  // The first page - title page with elegant styling
   page(align(center + horizon, {
-    std.title()
-    v(2em, weak: true)
+    // Decorative top ornament
+    text(1.2em, tracking: 0.5em, [~ ~ ~])
+    v(2em)
+
+    // Title in prominent smallcaps
+    text(26pt, weight: 700, tracking: 0.1em, smallcaps(title))
+
+    // Decorative line under title
+    v(1.5em)
+    line(length: 40%, stroke: 0.75pt)
+    v(1.5em)
+
+    // Subtitle in italics
     if subtitle != none {
-      text(1.0em, subtitle)
+      text(1.1em, style: "italic", subtitle)
+      v(2em)
     }
-    v(2em, weak: true)
+
+    // Decorative flourish before author
+    text(0.9em, tracking: 0.3em, sym.diamond.filled)
+    v(1.5em)
+
+    // Author in elegant smallcaps
     if author != none {
-      text(1.6em, author)
+      text(1.3em, tracking: 0.15em, smallcaps(author))
     }
+
+    // Bottom decorative element
+    v(3em)
+    text(1.2em, tracking: 0.5em, [~ ~ ~])
   }))
 
   // Display publisher info at the bottom of the second page.
@@ -87,17 +106,16 @@
   if dedication != none {
     v(15%)
     align(center, strong(dedication))
+    pagebreak(to: "odd")
   }
 
-  // Books like their empty pages.
-  pagebreak(to: "odd")
-
   if preface != none {
+    pagebreak(to: "odd", weak: true)
     preface
   }
 
-  // Books like their empty pages.
-  pagebreak(to: "odd")
+  // Ensure body starts on odd page
+  pagebreak(to: "odd", weak: true)
 
   // Configure paragraph properties.
   set par(spacing: 1.5em, leading: 0.78em, first-line-indent: 12pt, justify: true)
@@ -108,10 +126,12 @@
     show outline.entry.where(level: 1): it => {
       let loc = it.element.location()
       v(1em)
-      text(1.1em, weight: 600, smallcaps(link(loc, it.element.body)))
-      h(1fr)
-      text(1.1em, weight: 600, link(loc, str(loc.page())))
-      linebreak()
+      grid(
+        columns: (1fr, auto),
+        align: (left, right),
+        text(1.1em, weight: 600, smallcaps(link(loc, it.element.body))),
+        text(1.1em, weight: 600, link(loc, str(loc.page()))),
+      )
     }
     show outline.entry.where(level: 2): it => {
       let loc = it.element.location()
@@ -149,7 +169,7 @@
   set page(
     width: page-width,
     height: page-height,
-    margin: (..page-margin, top: 0.6in),
+    margin: (page-margin),
     // The header always contains the book chapter title on odd pages and
     // the book title on even pages, unless
     // - we are on an empty page
@@ -160,39 +180,48 @@
         return
       }
 
-      // Are we on a page that starts a chapter?
+      // Are we on a page that starts a level 1 or level 2 heading?
       let i = here().page()
+      if query(heading.where(level: 1)).any(it => it.location().page() == i) {
+        return
+      }
       if query(heading.where(level: 2)).any(it => it.location().page() == i) {
         return
       }
 
-      // Get the short chapter title from metadata
-      let short-title = {
-        let meta-query = query(selector(metadata).before(here()))
-          .filter(it => it.value != none and it.label == <short>)
-        if meta-query.len() > 0 {
-          meta-query.last().value
-        } else {
-          // Fallback to chapter heading if no metadata found
-          let before = query(selector(heading.where(level: 2)).before(here()))
-          if before != () {
-            before.last().body
-          }
+      // Suppress header on blank verso page after a part (H1) page
+      // This handles H1 followed directly by H2 with no content between
+      if calc.even(i) {
+        if query(<after-part-page>).any(it => it.location().page() == i) {
+          return
         }
       }
 
-      if short-title != none {
-        set text(0.9em)
-        let chapter-header = smallcaps(short-title)
-        let book-title = smallcaps(title)
-        set heading(numbering: "1.1")
-        show heading.where(level: 1): it => pagebreak(weak: true) + it
+      // Get the current level 1 heading for verso (even) pages
+      let section-title = {
+        let before = query(selector(heading.where(level: 1)).before(here()))
+        if before != () {
+          before.last().body
+        }
+      }
+
+      set text(0.9em)
+      // Verso (even) pages: book title, Recto (odd) pages: section title (or book title if no section yet)
+      let header-text = if calc.even(i) {
+        smallcaps(title)
+      } else if section-title != none {
+        smallcaps(section-title)
+      } else {
+        smallcaps(title)
+      }
+
+      if header-text != none {
         grid(
           columns: (1fr, 10fr, 1fr),
           align: (left, center, right),
           row-gutter: 0pt,
           if calc.even(i) [#i],
-          if calc.even(i) { book-title } else { chapter-header },
+          header-text,
           if calc.odd(i) [#i],
         )
         v(-0.4em)
@@ -222,6 +251,9 @@
       v(1em)
       line(length: 30%, stroke: 0.75pt)
     }))
+    // Mark the verso page after H1 (if any) and ensure content starts on recto
+    [#metadata(none) <after-part-page>]
+    detectable-pagebreak(to: "odd")
   }
 
   // Configure chapter headings.
