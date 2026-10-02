@@ -24,7 +24,14 @@
   // Page dimensions
   page-width: 5.5in,
   page-height: 8.5in,
-  page-margin: (bottom: 0.75in, top: 0.75in, outside: 0.75in, inside: 0.875in),
+  // The running head sits in the top margin, header-ascent above the text,
+  // so the top margin is the deeper one: with these, the head is 0.5in from
+  // the trim (Lulu's safety margin) and nothing prints in the bottom margin.
+  // The inside margin should follow Lulu's table for the page count (0.625in
+  // for 61-150 pages, 1in for 151-400, 1.125in for 401-600); ./fgb build
+  // checks it.
+  page-margin: (bottom: 0.6in, top: 0.9in, outside: 0.75in, inside: 0.875in),
+  header-ascent: 0.15in,
 
   // Make outline optional - good for small books with no chapters  
   show-outline: true,
@@ -181,6 +188,7 @@
     width: page-width,
     height: page-height,
     margin: page-margin,
+    header-ascent: header-ascent,
     // The header always contains the book chapter title on odd pages and
     // the book title on even pages, unless
     // - we are on an empty page
