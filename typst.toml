@@ -1,10 +1,10 @@
 [package]
 name = "fgbooks"
-version = "0.5.3"
+version = "0.5.4"
 entrypoint = "lib.typ"
 authors = ["FreelyGivenBooks"]
 license = "CC0"
-description = "Create an effectively laid out 6x9 print book."
+description = "Create an effectively laid out 5.5x8.5 print book."
 categories = ["book"]
 
 [template]
