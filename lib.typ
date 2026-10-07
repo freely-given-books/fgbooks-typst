@@ -300,7 +300,10 @@
     }
 
     v(1em)
-    text(1.2em, weight: 600, [#number #it.body])
+    // sticky: kept on the page of the text after it, never left at the foot
+    // of a page; spaced as the paragraph it used to be
+    block(sticky: true, above: 0.78em, below: 0.78em,
+      text(1.2em, weight: 600, [#number #it.body]))
     v(0.75em)
   }
 
@@ -312,11 +315,16 @@
     }
 
     v(0.75em)
-    text(11pt, weight: 700, [#number #it.body])
+    block(sticky: true, above: 0.78em, below: 0.78em,
+      text(11pt, weight: 700, [#number #it.body]))
     v(0.4em)
   }
 
   show heading: set text(11pt, weight: 400)
+
+  // Centered text (a line centered in the source) is not justified, so a
+  // centered paragraph of two lines is centered line by line, unhyphenated.
+  show align.where(alignment: center): set par(justify: false)
 
   body
 }
