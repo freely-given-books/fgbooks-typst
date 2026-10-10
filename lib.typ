@@ -322,9 +322,12 @@
 
   show heading: set text(11pt, weight: 400)
 
-  // Centered text (a line centered in the source) is not justified, so a
-  // centered paragraph of two lines is centered line by line, unhyphenated.
-  show align.where(alignment: center): set par(justify: false)
+  // Aligned text is not justified or hyphenated: a centered paragraph is
+  // centered line by line, a signature set right is ragged on the left.
+  // (A `.where(alignment: ...)` selector does not match here: 0.5.4's rule
+  // for centered text never took effect.)
+  show align: set par(justify: false)
+  show align: set text(hyphenate: false)
 
   body
 }
