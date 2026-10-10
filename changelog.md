@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.5
+
+2026-10-09
+
+* Aligned text (`#align(center)[...]`, `#align(right)[...]`, a signature) is
+  not justified or hyphenated: a long valediction set right is ragged on the
+  left. This also makes 0.5.4's rule for centered text work: its
+  `align.where(alignment: center)` selector never matched.
+
 ## 0.5.4
 
 2026-10-07
