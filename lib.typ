@@ -61,8 +61,10 @@
   // Set the document's metadata.
   set document(title: title, author: if author != none { author } else { () })
 
-  // set text(font: "Libertinus Serif")
-  set text(font: "Liberation Serif", size: 12pt)
+  // Libertinus Serif: real small capitals (smcp), and every Greek and pointed
+  // Hebrew character the books use. Liberation Serif (to 0.5.5) had no small
+  // capitals, so smallcaps() printed plain lower case.
+  set text(font: "Libertinus Serif", size: 12pt)
 
   // Configure the page properties.
   set page(

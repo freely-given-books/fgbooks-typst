@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.0
+
+2026-10-11
+
+* The text font is Libertinus Serif (was Liberation Serif). It has real small
+  capitals, so the title page, contents, running heads and chapter titles,
+  which always asked for `smallcaps`, now get them, as does `#smallcaps[...]`
+  in the text (CCEL's small capitals: Owen's "Fourthly", LORD). It covers
+  every Greek and pointed Hebrew character the books use. Pages reflow: a
+  book's page count, cover and spine change when it moves to 0.6.0.
+
 ## 0.5.5
 
 2026-10-09
