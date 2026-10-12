@@ -231,14 +231,21 @@
         let book-title = smallcaps(title)
         set heading(numbering: "1.1")
         show heading.where(level: 1): it => pagebreak(weak: true) + it
-        grid(
+        // A running head is one line: a title too long for it (small
+        // capitals are wide) is set smaller, down to 70%, rather than
+        // wrapping up into the top margin.
+        let fit(body, width) = {
+          let w = measure(body).width
+          if w <= width { body } else { text(size: calc.max(width / w, 0.7) * 1em, body) }
+        }
+        layout(size => grid(
           columns: (1fr, 10fr, 1fr),
           align: (left, center, right),
           row-gutter: 0pt,
           if calc.even(i) [#i],
-          if calc.even(i) { book-title } else { chapter-header },
+          fit(if calc.even(i) { book-title } else { chapter-header }, size.width * 10 / 12),
           if calc.odd(i) [#i],
-        )
+        ))
         v(-0.4em)
         line(length: 100%, stroke: 0.5pt)
       }
