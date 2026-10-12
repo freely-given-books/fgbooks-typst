@@ -156,6 +156,15 @@
   // Configure paragraph properties.
   set par(spacing: 0.78em, leading: 0.78em, first-line-indent: 12pt, justify: true)
 
+  // A bullet list (a family tree, a brace read as branches) is kept on one
+  // page when it is no taller than half the text area, so a diagram is not
+  // cut from its context; a longer one breaks as text does.
+  let text-height = page-height - page-margin.at("top", default: 0.9in) - page-margin.at("bottom", default: 0.6in)
+  show list: it => layout(size => {
+    let h = measure(block(width: size.width, it)).height
+    if h <= text-height / 2 { block(breakable: false, it) } else { it }
+  })
+
   // Start with a chapter outline.
   // Use short titles in the outline if available
   if show-outline {

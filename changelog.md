@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.0
+
+2026-10-12
+
+* A bullet list no taller than half the text area is kept on one page
+  (Perkins's family trees were cut in two across pages 41-42). Longer lists
+  break as before. Pages reflow in books with bullet lists (Perkins, Brooks's
+  Secret Key, Gouge).
+
 ## 0.7.0
 
 2026-10-12
