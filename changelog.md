@@ -3,7 +3,8 @@
 ## Unreleased
 
 * 0.8.0's rule (a bullet list no taller than half the text area kept on one
-  page) is withdrawn: no book uses 0.8.0. Diagrams printed as lists are kept
+  page) is withdrawn and the 0.8.0 tag deleted (no book used it); the next
+  release skips the number. Diagrams printed as lists are kept
   whole by colophon instead (DIAGRAM_LISTS, colophon 0.12.0), and other
   lists break as text does.
 
