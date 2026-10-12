@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.0
+
+2026-10-12
+
+* `font-size` (default 11pt, was a fixed 12pt): the body text size, which
+  the title page, contents and other em sizes follow. A book that must keep
+  its pages as they were passes `font-size: 12pt` (Simon Magus). Pages
+  reflow: a book on the default changes page count, cover and spine.
+
 ## 0.6.2
 
 2026-10-11

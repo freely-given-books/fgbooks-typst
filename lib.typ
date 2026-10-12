@@ -43,6 +43,10 @@
   page-margin: (bottom: 0.6in, top: 0.9in, outside: 0.75in, inside: 0.875in),
   header-ascent: 0.15in,
 
+  // The body text size; the title page, contents and anything else sized in
+  // em follow it. 11pt from 0.7.0 (12pt before).
+  font-size: 11pt,
+
   // Make outline optional - good for small books with no chapters  
   show-outline: true,
 
@@ -74,7 +78,7 @@
   // Libertinus Serif: real small capitals (smcp), and every Greek and pointed
   // Hebrew character the books use. Liberation Serif (to 0.5.5) had no small
   // capitals, so smallcaps() printed plain lower case.
-  set text(font: "Libertinus Serif", size: 12pt)
+  set text(font: "Libertinus Serif", size: font-size)
 
   // Configure the page properties.
   set page(
