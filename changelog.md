@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.2
+
+2026-10-11
+
+* `#speech[...]`: a speech in dialogue, its first line at the margin and the
+  rest hung 2em (colophon's SPEECH_BLOCKS; Pilgrim's Progress).
+* `#stanza[...]`: a stanza of a section made of verse, unindented, ragged,
+  1.2em apart (colophon's STANZA_BLOCKS).
+
 ## 0.6.1
 
 2026-10-11
