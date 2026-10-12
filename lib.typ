@@ -1,5 +1,15 @@
 // This function gets your whole document as its `body` and formats
 // it as a simple book.
+// A speech in dialogue (colophon's SPEECH_BLOCKS: #speech[#smallcaps[Christian]: ...]):
+// its first line at the margin, the rest hung 2em, deeper than a paragraph's
+// 12pt indent, so narrative after a speech does not read as more of it.
+#let speech(body) = par(first-line-indent: 0pt, hanging-indent: 2em, body)
+
+// A stanza of a section made of verse (STANZA_BLOCKS): not indented, ragged,
+// set apart from the stanzas around it.
+#let stanza(body) = block(above: 1.2em, below: 1.2em,
+  par(first-line-indent: 0pt, justify: false, body))
+
 #let book(
   // The book's title.
   title: [Book title],
