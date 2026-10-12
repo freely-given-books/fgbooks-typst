@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.1
+
+2026-10-11
+
+* A running head too long for one line (Libertinus's small capitals are
+  wider than Liberation's lower case) is set smaller, down to 70%, instead of
+  wrapping onto a second line within 0.5in of the trim.
+
 ## 0.6.0
 
 2026-10-11
