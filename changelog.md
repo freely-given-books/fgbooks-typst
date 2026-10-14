@@ -1,12 +1,17 @@
 # Changelog
 
-## Unreleased
+## 0.9.0
 
+2026-10-13
+
+* A paragraph after a list is indented like any other (Typst indents only a
+  paragraph that follows a paragraph, so a numbered paragraph right after a
+  list read as one more item: Gouge vol. 1 pp. 107, 128). Lists and the
+  space after them do not move; no book's page count changes.
 * 0.8.0's rule (a bullet list no taller than half the text area kept on one
-  page) is withdrawn and the 0.8.0 tag deleted (no book used it); the next
-  release skips the number. Diagrams printed as lists are kept
-  whole by colophon instead (DIAGRAM_LISTS, colophon 0.12.0), and other
-  lists break as text does.
+  page) is withdrawn and the 0.8.0 tag deleted (no book used it). Diagrams
+  printed as lists are kept whole by colophon instead (DIAGRAM_LISTS,
+  colophon 0.12.0), and other lists break as text does.
 
 ## 0.8.0
 

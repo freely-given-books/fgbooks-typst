@@ -156,6 +156,13 @@
   // Configure paragraph properties.
   set par(spacing: 0.78em, leading: 0.78em, first-line-indent: 12pt, justify: true)
 
+  // A paragraph after a list keeps its first-line indent: Typst indents only
+  // a paragraph that follows a paragraph, so a list ends with an empty one,
+  // set back by the paragraph spacing so nothing moves.
+  let end-with-par(it) = { it; v(-0.78em); par(first-line-indent: 0pt, box(height: 0pt)) }
+  show enum: end-with-par
+  show list: end-with-par
+
   // Start with a chapter outline.
   // Use short titles in the outline if available
   if show-outline {
