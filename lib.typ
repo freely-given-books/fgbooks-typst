@@ -210,6 +210,34 @@
   // Two printed tables set against each other: #[ ... ] <parallel>
   show <parallel>: parallel
 
+  // An em dash set straight after a word stays with it ("phrases,—" never
+  // leaves the dash alone on the next line); a spaced dash may still break.
+  show regex("\S—"): it => {
+    let s = it.text
+    s.slice(0, s.len() - "—".len()) + "\u{2060}—"
+  }
+
+  // Footnote markers that touch ("titles223224") are kept apart by a
+  // superscript comma (223,224): an invisible mark after each marker, and a
+  // marker set straight after the previous one's mark (or one space on)
+  // gets the comma.
+  show footnote: it => {
+    context {
+      let prev = query(selector(<fn-end>).before(here(), inclusive: false))
+      if prev.len() > 0 {
+        let p = prev.last().location().position()
+        let q = here().position()
+        // straight after it, or after the space between them (pulled back)
+        if (p.page == q.page and calc.abs(p.y - q.y) < 1pt and
+            q.x >= p.x - 0.5pt and q.x - p.x < 0.6em.to-absolute()) {
+          h(p.x - q.x) + super[,]
+        }
+      }
+    }
+    it
+    [#metadata(none)<fn-end>]
+  }
+
   // Start with a chapter outline.
   // Use short titles in the outline if available
   if show-outline {
