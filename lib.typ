@@ -42,7 +42,7 @@
   let (a, b) = halves
   let cols = (columns: (1fr, 1fr), column-gutter: 1.2em)
   let item(xs, i) = if i < xs.len() {
-    grid(columns: (1.4em, 1fr), [#(i + 1).], xs.at(i))
+    par(hanging-indent: 1.4em, box(width: 1.4em)[#(i + 1).] + xs.at(i))
   }
   set par(justify: false, first-line-indent: 0em)
   set text(size: 0.9em)
