@@ -212,15 +212,18 @@
 
   // Footnote markers that touch ("titles223224") are kept apart by a
   // superscript comma (223,224): an invisible mark after each marker, and a
-  // marker set straight after the previous one's mark gets the comma.
+  // marker set straight after the previous one's mark (or one space on)
+  // gets the comma.
   show footnote: it => {
     context {
       let prev = query(selector(<fn-end>).before(here(), inclusive: false))
       if prev.len() > 0 {
         let p = prev.last().location().position()
-        let h = here().position()
-        if p.page == h.page and calc.abs(p.y - h.y) < 1pt and calc.abs(h.x - p.x) < 0.5pt {
-          super[,]
+        let q = here().position()
+        // straight after it, or after the space between them (pulled back)
+        if p.page == q.page and calc.abs(p.y - q.y) < 1pt and
+            q.x >= p.x - 0.5pt and q.x - p.x < 0.6em.to-absolute() {
+          h(p.x - q.x) + super[,]
         }
       }
     }
