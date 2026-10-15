@@ -8,8 +8,8 @@
   parallel of husbands' and wives' duties; colophon's
   table/@rend="parallel") set as two columns, the heads side by side and
   kept with the first items, then item n against item n. Used through
-  `#[ #show: parallel ... ]`, so the text inside stays plain lines and
-  lists. No other book changes.
+  `#[ ... ] <parallel>` (book() shows the label, so a chapter file needs
+  no import); the text inside stays plain lines and lists. No other book changes.
 
 ## 0.9.0
 

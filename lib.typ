@@ -12,8 +12,9 @@
 
 // Two printed tables "laid even one against another" (colophon's
 // table/@rend="parallel", Gouge's parallel of husbands' and wives' duties):
-// #[ #show: parallel  head lines, a numbered list, head lines, a numbered
-// list ]. Set as two columns: the heads side by side, kept with the first
+// #[ head lines, a numbered list, head lines, a numbered list ] <parallel>
+// (book() shows the label with this, so a chapter file needs no import).
+// Set as two columns: the heads side by side, kept with the first
 // items, then item n against item n. Anything else is set as it is.
 #let parallel(body) = {
   let blank(k) = k == [ ] or (k.func() == text and k.text.trim() == "")
@@ -203,6 +204,9 @@
   let end-with-par(it) = { it; v(-0.78em); par(first-line-indent: 0pt, box(height: 0pt)) }
   show enum: end-with-par
   show list: end-with-par
+
+  // Two printed tables set against each other: #[ ... ] <parallel>
+  show <parallel>: parallel
 
   // Start with a chapter outline.
   // Use short titles in the outline if available
