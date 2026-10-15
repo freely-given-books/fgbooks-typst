@@ -10,6 +10,50 @@
 #let stanza(body) = block(above: 1.2em, below: 1.2em,
   par(first-line-indent: 0pt, justify: false, body))
 
+// Two printed tables "laid even one against another" (colophon's
+// table/@rend="parallel", Gouge's parallel of husbands' and wives' duties):
+// #[ head lines, a numbered list, head lines, a numbered list ] <parallel>
+// (book() shows the label with this, so a chapter file needs no import).
+// Set as two columns: the heads side by side, kept with the first
+// items, then item n against item n, a pair never split across pages.
+// Anything else is set as it is.
+#let parallel(body) = {
+  let blank(k) = k == [ ] or (k.func() == text and k.text.trim() == "")
+  let halves = ((heads: (), items: ()),)
+  let cur = ()
+  let in-items = false
+  for k in (if body.has("children") { body.children } else { (body,) }) {
+    if k.func() == enum.item {
+      if cur.len() > 0 { halves.last().heads.push(cur.join()); cur = () }
+      halves.last().items.push(k.body)
+      in-items = true
+    } else if k.func() == parbreak {
+      if cur.len() > 0 { halves.last().heads.push(cur.join()); cur = () }
+    } else if not blank(k) or cur.len() > 0 {
+      if in-items {
+        halves.push((heads: (), items: ()))
+        in-items = false
+      }
+      cur.push(k)
+    }
+  }
+  if cur.len() > 0 { halves.last().heads.push(cur.join()) }
+  if halves.len() != 2 { return body }
+  let (a, b) = halves
+  let cols = (columns: (1fr, 1fr), column-gutter: 1.2em)
+  let item(xs, i) = if i < xs.len() {
+    par(hanging-indent: 1.4em, box(width: 1.4em)[#(i + 1).] + xs.at(i))
+  }
+  set par(justify: false, first-line-indent: 0em)
+  set text(size: 0.9em)
+  block(above: 1.4em, below: 0.9em, sticky: true, grid(..cols,
+    ..(a, b).map(h => align(center, stack(spacing: 0.65em, ..h.heads)))))
+  block(below: 1.4em, grid(..cols, row-gutter: 0.75em,
+    ..range(calc.max(a.items.len(), b.items.len()))
+      .map(i => (item(a.items, i), item(b.items, i))
+        .map(c => grid.cell(breakable: false, c))).flatten()))
+}
+
 #let book(
   // The book's title.
   title: [Book title],
@@ -162,6 +206,9 @@
   let end-with-par(it) = { it; v(-0.78em); par(first-line-indent: 0pt, box(height: 0pt)) }
   show enum: end-with-par
   show list: end-with-par
+
+  // Two printed tables set against each other: #[ ... ] <parallel>
+  show <parallel>: parallel
 
   // Start with a chapter outline.
   // Use short titles in the outline if available
