@@ -221,8 +221,8 @@
         let p = prev.last().location().position()
         let q = here().position()
         // straight after it, or after the space between them (pulled back)
-        if p.page == q.page and calc.abs(p.y - q.y) < 1pt and
-            q.x >= p.x - 0.5pt and q.x - p.x < 0.6em.to-absolute() {
+        if (p.page == q.page and calc.abs(p.y - q.y) < 1pt and
+            q.x >= p.x - 0.5pt and q.x - p.x < 0.6em.to-absolute()) {
           h(p.x - q.x) + super[,]
         }
       }
