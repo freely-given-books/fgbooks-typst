@@ -15,7 +15,8 @@
 // #[ head lines, a numbered list, head lines, a numbered list ] <parallel>
 // (book() shows the label with this, so a chapter file needs no import).
 // Set as two columns: the heads side by side, kept with the first
-// items, then item n against item n. Anything else is set as it is.
+// items, then item n against item n, a pair never split across pages.
+// Anything else is set as it is.
 #let parallel(body) = {
   let blank(k) = k == [ ] or (k.func() == text and k.text.trim() == "")
   let halves = ((heads: (), items: ()),)
@@ -49,7 +50,8 @@
     ..(a, b).map(h => align(center, stack(spacing: 0.65em, ..h.heads)))))
   block(below: 1.4em, grid(..cols, row-gutter: 0.75em,
     ..range(calc.max(a.items.len(), b.items.len()))
-      .map(i => (item(a.items, i), item(b.items, i))).flatten()))
+      .map(i => (item(a.items, i), item(b.items, i))
+        .map(c => grid.cell(breakable: false, c))).flatten()))
 }
 
 #let book(
