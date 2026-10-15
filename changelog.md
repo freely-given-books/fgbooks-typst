@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.10.0
+
+2026-10-14
+
+* `parallel`: two printed tables "laid even one against another" (Gouge's
+  parallel of husbands' and wives' duties; colophon's
+  table/@rend="parallel") set as two columns, the heads side by side and
+  kept with the first items, then item n against item n. Used through
+  `#[ #show: parallel ... ]`, so the text inside stays plain lines and
+  lists. No other book changes.
+
 ## 0.9.0
 
 2026-10-13
