@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.11.0
+
+2026-10-14
+
+* Footnote markers that touch ("titles223224", two margin notes on one
+  word) are kept apart by a superscript comma (223,224), also across the
+  space between them.
+* An em dash set straight after a word stays with it, so a paragraph
+  ending "phrases,—" never leaves the dash alone on a line.
+
 ## 0.10.0
 
 2026-10-14

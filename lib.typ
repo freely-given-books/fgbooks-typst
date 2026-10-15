@@ -210,6 +210,13 @@
   // Two printed tables set against each other: #[ ... ] <parallel>
   show <parallel>: parallel
 
+  // An em dash set straight after a word stays with it ("phrases,—" never
+  // leaves the dash alone on the next line); a spaced dash may still break.
+  show regex("\S—"): it => {
+    let s = it.text
+    s.slice(0, s.len() - "—".len()) + "\u{2060}—"
+  }
+
   // Footnote markers that touch ("titles223224") are kept apart by a
   // superscript comma (223,224): an invisible mark after each marker, and a
   // marker set straight after the previous one's mark (or one space on)
