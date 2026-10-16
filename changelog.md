@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.12.0
+
+2026-10-15
+
+* A list inside a numbered list item is set one step further in, so its
+  numbers no longer line up with a paragraph's first-line indent and read
+  on into the numbered paragraphs after it (Gouge vol. 4 p. 34, "4. Good
+  will" and its four points; printed numbers kept). Only books with nested
+  lists change (Gouge, Sibbes).
+
 ## 0.11.0
 
 2026-10-14
