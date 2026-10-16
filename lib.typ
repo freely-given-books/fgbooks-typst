@@ -207,6 +207,18 @@
   show enum: end-with-par
   show list: end-with-par
 
+  // A list inside a list item is set one step further in (Gouge's "4. Good
+  // will" and its four points, a brace in 1622): at the item's text it lines
+  // up with a paragraph's first-line indent, and its 1. 2. 3. read on into
+  // the numbered paragraphs after it.
+  let nested-in(it) = {
+    show enum: set enum(indent: 1.2em)
+    show list: set list(indent: 1.2em)
+    it
+  }
+  show enum: nested-in
+  show list: nested-in
+
   // Two printed tables set against each other: #[ ... ] <parallel>
   show <parallel>: parallel
 
