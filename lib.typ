@@ -54,6 +54,74 @@
         .map(c => grid.cell(breakable: false, c))).flatten()))
 }
 
+// Common Weal Press: the press's seal and device, and its publisher's page.
+// The artwork is in press/: the seal is a fountain cut in woodcut from a
+// roundel (traced to vector, so it holds at a quarter of an inch on a
+// spine); the device is the same fountain in its town square, the ribbons
+// lettered "Drink freely" and "Let the one who is thirsty come" (Revelation
+// 22:17) in Cinzel, set as outlines so it needs no font. Every colour can be
+// given, so a cover sets the seal in its own.
+#let _recolour(file, dark, light) = bytes(read(file)
+  .replace("#000", "@DARK@").replace("#fff", light.to-hex())
+  .replace("@DARK@", dark.to-hex()))
+
+// The seal: a solid roundel with the fountain in the paper's colour.
+#let press-seal(width: 0.6in, roundel: black, fountain: white) = image(
+  _recolour("press/seal.svg", roundel, fountain), format: "svg", width: width)
+
+// The seal with the fountain cut through, so the ground shows in it: for a
+// cover, set in the cover's light colour on its dark ground.
+#let press-seal-knockout(width: 0.6in, fill: white) = image(
+  _recolour("press/seal-knockout.svg", fill, white), format: "svg", width: width)
+
+// The seal as a positive: a dark fountain on the page, inside a ring.
+#let press-seal-positive(width: 0.6in, ink: black, paper: white) = image(
+  _recolour("press/seal-positive.svg", ink, paper), format: "svg", width: width)
+
+// The device, black, for the publisher's page and title pages.
+#let press-device(width: 2.4in) = image("press/device.svg", width: width)
+
+// The publisher's page, the verso of the title page: pass it to book() as
+// `publishing-info`. `note` is the book's own lines (where its text comes
+// from, say), set under the licence; `isbn` once the book has one.
+#let publisher-page(note: none, isbn: none, height: 6.9in) = block(height: height, width: 100%, {
+  set align(center)
+  // the press's page is the same in every book, whatever the book is set in
+  set text(font: "Libertinus Serif", size: 9pt)
+  set par(justify: false, leading: 0.6em, spacing: 0.9em, first-line-indent: 0pt)
+  let rule = line(length: 0.6in, stroke: 0.5pt)
+  press-device(width: 2.4in)
+  v(0.5em)
+  text(19pt)[Common Weal Press]
+  v(-0.35em)
+  text(10.5pt, style: "italic")[The Christian Inheritance. Freely Given.]
+  v(0.1em)
+  rule
+  v(1fr)
+  [This edition is published by Common Weal Press and dedicated to the
+  public domain under the Creative Commons CC0 1.0 Universal Public Domain
+  Dedication. You are free to copy, distribute, modify and use it for any
+  purpose, without asking.
+  #link("https://creativecommons.org/publicdomain/zero/1.0/")[creativecommons.org/publicdomain/zero/1.0]]
+  parbreak()
+  image("press/public-domain.png", width: 42%)
+  parbreak()
+  [_Freely you have received; freely give._ — Matthew 10:8]
+  parbreak()
+  [Printed copies are sold at the cost of printing: no revenue or royalty
+  is made from them.]
+  if note != none { parbreak(); note }
+  if isbn != none { parbreak(); [ISBN #isbn] }
+  v(1fr)
+  rule
+  v(-0.2em)
+  [Free ebooks, PDFs and at-cost printed copies:]
+  v(-0.45em)
+  text(10pt, tracking: 0.05em)[commonwealpress.org]
+  v(-0.3em)
+  text(7.5pt)[Corrections and questions: #link("mailto:books@commonwealpress.org")[books\@commonwealpress.org]]
+})
+
 #let book(
   // The book's title.
   title: [Book title],
