@@ -90,37 +90,53 @@
   set text(font: "Libertinus Serif", size: 9pt)
   set par(justify: false, leading: 0.6em, spacing: 0.9em, first-line-indent: 0pt)
   let rule = line(length: 0.6in, stroke: 0.5pt)
-  press-device(width: 2.4in)
-  v(0.5em)
-  text(19pt)[Common Weal Press]
-  v(-0.35em)
-  text(10.5pt, style: "italic")[The Christian Inheritance. Freely Given.]
-  v(0.1em)
-  rule
-  v(1fr)
-  [This edition is published by Common Weal Press and dedicated to the
-  public domain under the Creative Commons CC0 1.0 Universal Public Domain
-  Dedication. You are free to copy, distribute, modify and use it for any
-  purpose, without asking.
-  // the address kept whole, on a line of its own if need be
-  #box(link("https://creativecommons.org/publicdomain/zero/1.0/")[creativecommons.org/publicdomain/zero/1.0])]
-  parbreak()
-  image("press/public-domain.png", width: 42%)
-  parbreak()
-  [_Freely you have received; freely give._ — Matthew 10:8]
-  parbreak()
-  [Printed copies are sold at the cost of printing: no revenue or royalty
-  is made from them.]
-  if note != none { parbreak(); note }
-  if isbn != none { parbreak(); [ISBN #isbn] }
-  v(1fr)
-  rule
-  v(-0.2em)
-  [Free ebooks, PDFs and at-cost printed copies:]
-  v(-0.45em)
-  text(10pt, tracking: 0.05em)[commonwealpress.org]
-  v(-0.3em)
-  text(7.5pt)[Corrections and questions: #link("mailto:books@commonwealpress.org")[books\@commonwealpress.org]]
+  let head = {
+    v(0.5em)
+    text(19pt)[Common Weal Press]
+    v(-0.35em)
+    text(10.5pt, style: "italic")[The Christian Inheritance. Freely Given.]
+    v(0.1em)
+    rule
+  }
+  let middle = {
+    [This edition is published by Common Weal Press and dedicated to the
+    public domain under the Creative Commons CC0 1.0 Universal Public Domain
+    Dedication. You are free to copy, distribute, modify and use it for any
+    purpose, without asking.
+    // the address kept whole, on a line of its own if need be
+    #box(link("https://creativecommons.org/publicdomain/zero/1.0/")[creativecommons.org/publicdomain/zero/1.0])]
+    parbreak()
+    image("press/public-domain.png", width: 42%)
+    parbreak()
+    [_Freely you have received; freely give._ — Matthew 10:8]
+    parbreak()
+    [Printed copies are sold at the cost of printing: no revenue or royalty
+    is made from them.]
+    if note != none { parbreak(); note }
+    if isbn != none { parbreak(); [ISBN #isbn] }
+  }
+  let foot = {
+    rule
+    v(-0.2em)
+    [Free ebooks, PDFs and at-cost printed copies:]
+    v(-0.45em)
+    text(10pt, tracking: 0.05em)[commonwealpress.org]
+    v(-0.3em)
+    text(7.5pt)[Corrections and questions: #link("mailto:books@commonwealpress.org")[books\@commonwealpress.org]]
+  }
+  layout(size => {
+    // the device (square) takes what the words leave, at most 2.4in: a book
+    // with a long note (a volume of a set, where its text comes from) gets
+    // a smaller device rather than a page that overflows
+    let words = (head, middle, foot).map(b => measure(block(width: size.width, b)).height).sum()
+    let device = calc.max(1.4in, calc.min(2.4in, height - words - 0.45in))
+    press-device(width: device)
+    head
+    v(1fr)
+    middle
+    v(1fr)
+    foot
+  })
 })
 
 #let book(

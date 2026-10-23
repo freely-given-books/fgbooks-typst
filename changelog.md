@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.13.1
+
+2026-10-22
+
+* `publisher-page`: the device is sized to what the words leave (at most
+  2.4in, at least 1.4in), so a book with a long note (Calvin's and Gouge's
+  volumes) no longer overflows the page. A book with a short note is
+  unchanged.
+
 ## 0.13.0
 
 2026-10-22
