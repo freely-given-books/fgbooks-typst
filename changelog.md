@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.13.0
+
+2026-10-22
+
+* Common Weal Press artwork in the package (`press/`): the woodcut seal
+  (`press-seal`, `press-seal-knockout`, `press-seal-positive`, any colours)
+  and the device, the seal's fountain in its town square with "Drink
+  freely" and "Let the one who is thirsty come" (Rev. 22:17) on the ribbons
+  (`press-device`), with the public-domain badge.
+* `publisher-page(note:, isbn:)`: the press's publisher's page, for
+  `book(publishing-info: ...)`, in place of the text each book pasted in.
+  A book that does not use it is unchanged.
+
 ## 0.12.0
 
 2026-10-15
