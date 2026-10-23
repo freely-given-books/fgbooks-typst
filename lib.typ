@@ -102,7 +102,8 @@
   public domain under the Creative Commons CC0 1.0 Universal Public Domain
   Dedication. You are free to copy, distribute, modify and use it for any
   purpose, without asking.
-  #link("https://creativecommons.org/publicdomain/zero/1.0/")[creativecommons.org/publicdomain/zero/1.0]]
+  // the address kept whole, on a line of its own if need be
+  #box(link("https://creativecommons.org/publicdomain/zero/1.0/")[creativecommons.org/publicdomain/zero/1.0])]
   parbreak()
   image("press/public-domain.png", width: 42%)
   parbreak()
