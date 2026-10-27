@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.13.2
+
+2026-10-26
+
+* `publisher-page`: the press's motto is now "Christian classics, freely
+  given." (was "The Christian Inheritance. Freely Given.").
+
 ## 0.13.1
 
 2026-10-22
