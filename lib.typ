@@ -94,7 +94,7 @@
     v(0.5em)
     text(19pt)[Common Weal Press]
     v(-0.35em)
-    text(10.5pt, style: "italic")[The Christian Inheritance. Freely Given.]
+    text(10.5pt, style: "italic")[Christian classics, freely given.]
     v(0.1em)
     rule
   }
