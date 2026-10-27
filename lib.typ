@@ -17,6 +17,126 @@
 // Set as two columns: the heads side by side, kept with the first
 // items, then item n against item n, a pair never split across pages.
 // Anything else is set as it is.
+// A genealogy printed as a tree (Perkins's Christian Oeconomie), a scope
+// #[ ... ] <diagram> holding its lists, drawn as the 1609 page draws it: each
+// name over its children, a brace over two or more, a short bar over one. A
+// list with no nesting is a line of descent, one name under the other. Two
+// trees side by side are parted by a rule. A name ending in a dash ("Abraham—")
+// is joined by a line to the next name on its row (a brother; a husband in
+// one tree, his wife in the other).
+#let diagram(body) = context {
+  let GAP = 1.4em.to-absolute()          // between brothers
+  let DASH = 1.6em.to-absolute()         // more after a name joined to the next
+  let TREE-GAP = 2.8em.to-absolute()     // between trees
+  let ROW = measure[Ag].height           // a row of names
+  let CONN = 1.1em.to-absolute()         // the space a brace or bar takes
+  let PAD = 0.3em.to-absolute()          // between a name and a line
+  let stroke = 0.5pt + text.fill
+
+  let blank(k) = k == [ ] or k.func() == parbreak or k.func() == linebreak or (
+    k.func() == text and k.text.trim() == "")
+  let kids(c) = if c.has("children") { c.children } else { (c,) }
+  let parse(it) = {
+    let label = ()
+    let children = ()
+    for k in kids(it.body) {
+      if k.func() == list.item { children.push(parse(k)) }
+      else if not blank(k) or label.len() > 0 { label.push(k) }
+    }
+    while label.len() > 0 and blank(label.last()) { let _ = label.pop() }
+    let dash = false
+    if label.len() > 0 and label.last().func() == text and label.last().text.ends-with("—") {
+      dash = true
+      label.last() = text(label.last().text.trim("—", at: end).trim(at: end))
+    }
+    (label: label.join(), dash: dash, children: children)
+  }
+  let tops = kids(body).filter(k => k.func() == list.item).map(parse)
+  if tops.len() == 0 { return body }
+  // a line of descent: every name a child of the one before
+  if tops.len() > 1 and tops.all(t => t.children.len() == 0) {
+    let n = tops.last()
+    for t in tops.slice(0, -1).rev() { n = (..t, children: (n,)) }
+    tops = (n,)
+  }
+
+  let lw(n) = measure(n.label).width
+  // the space after each child but the last: more after a dash, for its line
+  let gaps(cs) = cs.slice(0, -1).map(c => if c.dash { GAP + DASH } else { GAP })
+  let width(n) = {
+    let span = if n.children.len() == 0 { 0pt } else {
+      n.children.map(width).sum() + gaps(n.children).sum(default: 0pt) }
+    calc.max(lw(n), span)
+  }
+  let depth(n) = 1 + n.children.map(depth).fold(0, calc.max)
+  let line-at(x0, y0, x1, y1) = place(top + left,
+    line(start: (x0, y0), end: (x1, y1), stroke: stroke))
+
+  // a subtree from x (its left) at row d: what to draw, and every name's place
+  let lay(n, x, d) = {
+    let W = width(n)
+    let cx = x + W / 2
+    let y = d * (ROW + CONN)
+    let out = (place(top + left, dx: cx - lw(n) / 2, dy: y, n.label),)
+    let names = ((d: d, cx: cx, w: lw(n), dash: n.dash, y: y),)
+    if n.children.len() > 0 {
+      let span = n.children.map(width).sum() + gaps(n.children).sum(default: 0pt)
+      let cx0 = x + (W - span) / 2
+      let edges = ()
+      let after = gaps(n.children) + (0pt,)
+      for (i, c) in n.children.enumerate() {
+        let r = lay(c, cx0, d + 1)
+        out += r.out
+        names += r.names
+        edges.push((cx0 + width(c) / 2 - lw(c) / 2, cx0 + width(c) / 2 + lw(c) / 2))
+        cx0 += width(c) + after.at(i)
+      }
+      let top-y = y + ROW + PAD
+      let bot-y = y + ROW + CONN - PAD
+      if n.children.len() == 1 {
+        out.push(line-at(cx, top-y, cx, bot-y))
+      } else {
+        // a brace: a rule over the children, its ends turned down, a peak
+        // under the parent
+        let (l, r) = (edges.first().at(0), edges.last().at(1))
+        let mid = (top-y + bot-y) / 2
+        let peak = 0.22em.to-absolute()
+        out += (line-at(l, mid, cx - peak, mid), line-at(cx + peak, mid, r, mid),
+                line-at(cx - peak, mid, cx, top-y), line-at(cx, top-y, cx + peak, mid),
+                line-at(l, mid, l, bot-y), line-at(r, mid, r, bot-y))
+      }
+    }
+    (out: out, names: names)
+  }
+
+  let out = ()
+  let names = ()
+  let x = 0pt
+  let rules = ()
+  for (i, t) in tops.enumerate() {
+    if i > 0 { rules.push(x - TREE-GAP / 2) }
+    let r = lay(t, x, 0)
+    out += r.out
+    names += r.names
+    x += width(t) + TREE-GAP
+  }
+  let W = x - TREE-GAP
+  let rows = tops.map(depth).fold(0, calc.max)
+  let H = rows * ROW + (rows - 1) * CONN
+  for rx in rules { out.push(line-at(rx, 0pt, rx, H)) }
+  // a name ending in a dash: a line to the next name on its row
+  for a in names.filter(n => n.dash) {
+    let b = names.filter(n => n.d == a.d and n.cx > a.cx).sorted(key: n => n.cx)
+    if b.len() > 0 {
+      let b = b.first()
+      let y = a.y + ROW / 2
+      out.push(line-at(a.cx + a.w / 2 + PAD, y, b.cx - b.w / 2 - PAD, y))
+    }
+  }
+  block(width: 100%, breakable: false, above: 1.1em, below: 1.1em,
+    align(center, box(width: W, height: H, out.join())))
+}
+
 #let parallel(body) = {
   let blank(k) = k == [ ] or (k.func() == text and k.text.trim() == "")
   let halves = ((heads: (), items: ()),)
@@ -306,6 +426,9 @@
 
   // Two printed tables set against each other: #[ ... ] <parallel>
   show <parallel>: parallel
+
+  // A genealogy printed as a tree: #[ ... ] <diagram>
+  show <diagram>: diagram
 
   // An em dash set straight after a word stays with it ("phrases,—" never
   // leaves the dash alone on the next line); a spaced dash may still break.
