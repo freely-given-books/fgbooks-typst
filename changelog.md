@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.13.3
+
+2026-10-26
+
+* A block quote (`#quote[...]`) has the same space above as below (1.8em);
+  Typst's own spacing left about 6.6pt more above it.
+
 ## 0.13.2
 
 2026-10-26
