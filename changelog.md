@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.14.0
+
+2026-10-26
+
+* `diagram`: a genealogy printed as a tree (Perkins's Christian Oeconomie),
+  a scope `#[ ... ] <diagram>` holding its lists, is drawn as the 1609 page
+  draws it: each name over its children, a brace over two or more, a bar
+  over one; a list with no nesting is a line of descent; trees side by side
+  are parted by a rule; a name ending in a dash is joined by a line to the
+  next name on its row. The book setup shows `<diagram>` with it.
+
 ## 0.13.3
 
 2026-10-26
