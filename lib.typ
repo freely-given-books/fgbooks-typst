@@ -377,6 +377,10 @@
   pagebreak(to: "odd", weak: true)
 
   set quote(block: true)
+  // Typst's own spacing round a block quote is uneven (about 6.6pt more
+  // above than below: All of Grace, p. 16, "even dared to say:"); the same
+  // space either side, what it gave below.
+  show quote.where(block: true): set block(spacing: 1.8em)
 
   // Configure page properties.
   set page(
