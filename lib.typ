@@ -411,6 +411,15 @@
   let end-with-par(it) = { it; v(-0.78em); par(first-line-indent: 0pt, box(height: 0pt)) }
   show enum: end-with-par
   show list: end-with-par
+  // and so does one after a block set off (#block(inset: (x: 1em))[...]:
+  // Gouge's propositions, Owen's arguments)
+  show block.where(inset: (left: 1em, right: 1em)): end-with-par
+
+  // Every list starts at a paragraph's first-line indent, so its numbers
+  // never stand left of the paragraphs around it; one that belongs to a
+  // numbered point sets its own indent further in (colophon's indent: 24pt).
+  set enum(indent: 12pt)
+  set list(indent: 12pt)
 
   // A list inside a list item is set one step further in (Gouge's "4. Good
   // will" and its four points, a brace in 1622): at the item's text it lines

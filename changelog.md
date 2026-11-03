@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.15.0
+
+2026-11-03
+
+* Every list (`enum`, `list`) starts at a paragraph's first-line indent
+  (12pt), not at the margin, so its numbers never stand left of the
+  paragraphs around it (Gouge's outlines). A list inside an item is still
+  set one step further in from the item.
+* A paragraph after a block set off (`#block(inset: (x: 1em))[...]`) keeps
+  its first-line indent, as one after a list does.
+
 ## 0.14.0
 
 2026-10-26
