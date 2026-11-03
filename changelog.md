@@ -15,7 +15,8 @@
   breaks between them (a marker after "hand?" could start the next line),
   and no space is left before the comma between touching markers.
 * A note set with its own mark (`#footnote(numbering: (..) => "*")[...]`)
-  is not counted: the numbers of the notes after it go on.
+  is not counted: the numbers of the notes after it go on. Its mark is set
+  larger than a number (in the text and before the note), taking no room.
 * A chapter's place in the work's own divisions: `#metadata((part: [..],
   sections: [..])) <kicker>` before a chapter (one per chapter, in order,
   as `<short>`) sets "part · sections" over its title, in the space above

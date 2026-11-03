@@ -456,7 +456,17 @@
   // superscript comma (223,224): an invisible mark after each marker, and a
   // marker set straight after the previous one's mark (or one space on)
   // gets the comma.
+  // A note's own mark (Gouge's *) is set larger than a number, in the text
+  // and at the foot, so it is found at a glance
+  show footnote.entry: it => if type(it.note.numbering) == function {
+    show "*": set text(1.6em, baseline: 0.35em, top-edge: 0pt, bottom-edge: 0pt)
+    it
+  } else { it }
   show footnote: it => {
+    // (its lines keep their height: the larger mark takes no room)
+    show "*": s => if type(it.numbering) == function {
+      text(1.6em, baseline: 0.35em, top-edge: 0pt, bottom-edge: 0pt, s)
+    } else { s }
     // A marker stays on the line of the words it follows: the space before
     // it goes, and a word joiner keeps a line from breaking there (after
     // "hand?" or "commonwealth?" a marker could start the next line)
