@@ -16,6 +16,12 @@
   and no space is left before the comma between touching markers.
 * A note set with its own mark (`#footnote(numbering: (..) => "*")[...]`)
   is not counted: the numbers of the notes after it go on.
+* A chapter's place in the work's own divisions: `#metadata((part: [..],
+  sections: [..])) <kicker>` before a chapter (one per chapter, in order,
+  as `<short>`) sets "part · sections" over its title, in the space above
+  it (no text moves), groups the contents under each part with the
+  sections beside the page, and puts the part in the left-hand running
+  head instead of the book's title (Gouge's treatises).
 * A paragraph after a block set off (`#block(inset: (x: 1em))[...]`) keeps
   its first-line indent, as one after a list does.
 

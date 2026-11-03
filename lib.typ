@@ -511,12 +511,32 @@
       // Indent if level 1 headings exist
       let indent = if has-h1 { 1.5em } else { 0em }
 
-      pad(left: indent, link(loc)[
-        #title
-        #box(width: 1fr, it.fill)
-        #loc.page()
-        #linebreak()
-      ])
+      // chapters with a <kicker> are listed under its part (a treatise),
+      // each with its sections
+      let ks = query(<kicker>)
+      let k = if idx != none and idx < ks.len() { ks.at(idx).value }
+      let prev = if idx != none and idx > 0 and idx - 1 < ks.len() { ks.at(idx - 1).value }
+      let part = if type(k) == dictionary { k.at("part", default: none) }
+      if part != none and (type(prev) != dictionary or prev.at("part", default: none) != part) {
+        v(0.8em, weak: true)
+        text(tracking: 0.04em, smallcaps(part))
+        linebreak()
+      }
+      let secs = if type(k) == dictionary { k.at("sections", default: none) }
+      if secs == none {
+        pad(left: indent, link(loc)[
+          #title
+          #box(width: 1fr, it.fill)
+          #loc.page()
+          #linebreak()
+        ])
+      } else {
+        // the sections in a column of their own before the page
+        pad(left: indent + 1em, link(loc, grid(columns: (1fr, 4.6em, 1.8em),
+          [#title #box(width: 1fr, it.fill)],
+          align(right, text(0.9em, style: "italic", secs)),
+          align(right, str(loc.page())))))
+      }
     }
     outline(title: [Chapters], depth: 2)
   }
@@ -571,7 +591,13 @@
       if short-title != none {
         set text(0.9em)
         let chapter-header = smallcaps(short-title)
-        let book-title = smallcaps(title)
+        // a chapter with a <kicker> part (Gouge's treatise) has it on the
+        // left-hand page, so it can be found from any page
+        let kick = query(selector(metadata).before(here())).filter(it => it.label == <kicker>)
+        let part = if kick.len() > 0 and type(kick.last().value) == dictionary {
+          kick.last().value.at("part", default: none)
+        }
+        let book-title = smallcaps(if part != none { part } else { title })
         set heading(numbering: "1.1")
         show heading.where(level: 1): it => pagebreak(weak: true) + it
         // A running head is one line: a title too long for it (small
@@ -638,9 +664,30 @@
       h(7pt, weak: true)
     }
 
-    v(5%)
+    // A chapter's place in the work's own divisions, from its
+    // #metadata((part: [..], sections: [..])) <kicker> (one per chapter, in
+    // order, as <short>; none for a chapter without), set in the space above
+    // the title so the chapter's text does not move. Gouge's chapters are
+    // the edition's; his treatises and numbered sections are what his
+    // references name ("Treat. 4. §. 2.")
     set par(justify: false)
-    align(center, text(22pt, weight: 700, hyphenate: false, [#number#it.body]))
+    context {
+      let ks = query(<kicker>)
+      let idx = query(heading.where(level: 2)).position(h => h.location() == it.location())
+      let k = if idx != none and idx < ks.len() { ks.at(idx).value }
+      let line = if type(k) == dictionary {
+        let bits = ()
+        if k.at("part", default: none) != none { bits.push(smallcaps(k.part)) }
+        if k.at("sections", default: none) != none { bits.push(emph(k.sections)) }
+        if bits.len() > 0 { align(center, text(10pt, tracking: 0.03em, bits.join([ · ]))) }
+      }
+      v(5%)
+      align(center, {
+        // placed over the title, taking no room of its own
+        if line != none { place(top + center, dy: -(measure(line).height + 1.2em), line) }
+        text(22pt, weight: 700, hyphenate: false, [#number#it.body])
+      })
+    }
     v(2.5em)
   }
 
