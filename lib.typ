@@ -457,6 +457,11 @@
   // marker set straight after the previous one's mark (or one space on)
   // gets the comma.
   show footnote: it => {
+    // A marker stays on the line of the words it follows: the space before
+    // it goes, and a word joiner keeps a line from breaking there (after
+    // "hand?" or "commonwealth?" a marker could start the next line)
+    h(0pt, weak: true)
+    "\u{2060}"
     context {
       let prev = query(selector(<fn-end>).before(here(), inclusive: false))
       if prev.len() > 0 {

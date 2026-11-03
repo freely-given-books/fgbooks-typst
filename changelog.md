@@ -11,6 +11,9 @@
 * A list has half a line's space above and below it (a list inside an
   item does not), so the paragraph after it, its first line at the same
   indent, does not read as one more item.
+* A footnote marker stays on the line of the words before it: no line
+  breaks between them (a marker after "hand?" could start the next line),
+  and no space is left before the comma between touching markers.
 * A paragraph after a block set off (`#block(inset: (x: 1em))[...]`) keeps
   its first-line indent, as one after a list does.
 
