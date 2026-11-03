@@ -420,6 +420,10 @@
   // numbered point sets its own indent further in (colophon's indent: 24pt).
   set enum(indent: 12pt)
   set list(indent: 12pt)
+  // and has half a line's space above and below it, so a paragraph after it,
+  // its first line at the same indent, does not read as its next item
+  show enum: set block(above: 1.28em, below: 1.28em)
+  show list: set block(above: 1.28em, below: 1.28em)
 
   // A list inside a list item is set one step further in (Gouge's "4. Good
   // will" and its four points, a brace in 1622): at the item's text it lines
@@ -428,6 +432,8 @@
   let nested-in(it) = {
     show enum: set enum(indent: 1.2em)
     show list: set list(indent: 1.2em)
+    show enum: set block(above: 0.78em, below: 0.78em)
+    show list: set block(above: 0.78em, below: 0.78em)
     it
   }
   show enum: nested-in

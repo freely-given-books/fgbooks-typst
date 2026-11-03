@@ -8,6 +8,9 @@
   (12pt), not at the margin, so its numbers never stand left of the
   paragraphs around it (Gouge's outlines). A list inside an item is still
   set one step further in from the item.
+* A list has half a line's space above and below it (a list inside an
+  item does not), so the paragraph after it, its first line at the same
+  indent, does not read as one more item.
 * A paragraph after a block set off (`#block(inset: (x: 1em))[...]`) keeps
   its first-line indent, as one after a list does.
 
