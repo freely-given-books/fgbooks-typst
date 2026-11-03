@@ -18,8 +18,8 @@
   is not counted: the numbers of the notes after it go on. Its mark is set
   larger than a number (in the text and before the note), taking no room.
 * A chapter's place in the work's own divisions: `#metadata((part: [..],
-  sections: [..])) <kicker>` before a chapter (one per chapter, in order,
-  as `<short>`) sets "part · sections" over its title, in the space above
+  sections: [..])) <kicker>` before a chapter (matched to the chapter it
+  stands before; a chapter may have none) sets "part · sections" over its title, in the space above
   it (no text moves), groups the contents under each part with the
   sections beside the page, and puts the part in the left-hand running
   head instead of the book's title (Gouge's treatises).

@@ -259,6 +259,16 @@
   })
 })
 
+// The <kicker> of the chapter whose heading is at loc: the one set after
+// the chapter before it (a chapter without one, a dedication, has none)
+#let kicker-at(loc) = {
+  let sel = selector(<kicker>).before(loc)
+  let prev = query(selector(heading.where(level: 2)).before(loc, inclusive: false))
+  if prev.len() > 0 { sel = sel.after(prev.last().location()) }
+  let ks = query(sel)
+  if ks.len() > 0 { ks.last().value }
+}
+
 #let book(
   // The book's title.
   title: [Book title],
@@ -523,9 +533,8 @@
 
       // chapters with a <kicker> are listed under its part (a treatise),
       // each with its sections
-      let ks = query(<kicker>)
-      let k = if idx != none and idx < ks.len() { ks.at(idx).value }
-      let prev = if idx != none and idx > 0 and idx - 1 < ks.len() { ks.at(idx - 1).value }
+      let k = kicker-at(loc)
+      let prev = if idx != none and idx > 0 { kicker-at(all-h2.at(idx - 1).location()) }
       let part = if type(k) == dictionary { k.at("part", default: none) }
       if part != none and (type(prev) != dictionary or prev.at("part", default: none) != part) {
         v(0.8em, weak: true)
@@ -603,10 +612,9 @@
         let chapter-header = smallcaps(short-title)
         // a chapter with a <kicker> part (Gouge's treatise) has it on the
         // left-hand page, so it can be found from any page
-        let kick = query(selector(metadata).before(here())).filter(it => it.label == <kicker>)
-        let part = if kick.len() > 0 and type(kick.last().value) == dictionary {
-          kick.last().value.at("part", default: none)
-        }
+        let ch = query(selector(heading.where(level: 2)).before(here()))
+        let kick = if ch.len() > 0 { kicker-at(ch.last().location()) }
+        let part = if type(kick) == dictionary { kick.at("part", default: none) }
         let book-title = smallcaps(if part != none { part } else { title })
         set heading(numbering: "1.1")
         show heading.where(level: 1): it => pagebreak(weak: true) + it
@@ -675,16 +683,14 @@
     }
 
     // A chapter's place in the work's own divisions, from its
-    // #metadata((part: [..], sections: [..])) <kicker> (one per chapter, in
-    // order, as <short>; none for a chapter without), set in the space above
+    // #metadata((part: [..], sections: [..])) <kicker> (set before the
+    // chapter it belongs to; a chapter may have none), set in the space above
     // the title so the chapter's text does not move. Gouge's chapters are
     // the edition's; his treatises and numbered sections are what his
     // references name ("Treat. 4. §. 2.")
     set par(justify: false)
     context {
-      let ks = query(<kicker>)
-      let idx = query(heading.where(level: 2)).position(h => h.location() == it.location())
-      let k = if idx != none and idx < ks.len() { ks.at(idx).value }
+      let k = kicker-at(it.location())
       let line = if type(k) == dictionary {
         let bits = ()
         if k.at("part", default: none) != none { bits.push(smallcaps(k.part)) }
