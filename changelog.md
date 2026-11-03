@@ -14,6 +14,8 @@
 * A footnote marker stays on the line of the words before it: no line
   breaks between them (a marker after "hand?" could start the next line),
   and no space is left before the comma between touching markers.
+* A note set with its own mark (`#footnote(numbering: (..) => "*")[...]`)
+  is not counted: the numbers of the notes after it go on.
 * A paragraph after a block set off (`#block(inset: (x: 1em))[...]`) keeps
   its first-line indent, as one after a list does.
 

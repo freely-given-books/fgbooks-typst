@@ -476,6 +476,9 @@
     }
     it
     [#metadata(none)<fn-end>]
+    // a note set with its printed mark (#footnote(numbering: (..) => "*")[..],
+    // Gouge's * references) is not counted: the numbers go on past it
+    if type(it.numbering) == function { counter(footnote).update(n => n - 1) }
   }
 
   // Start with a chapter outline.
