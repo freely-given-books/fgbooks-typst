@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.15.0
+
+2026-11-03
+
+* Every list (`enum`, `list`) starts at a paragraph's first-line indent
+  (12pt), not at the margin, so its numbers never stand left of the
+  paragraphs around it (Gouge's outlines). A list inside an item is still
+  set one step further in from the item.
+* A list has half a line's space above and below it (a list inside an
+  item does not), so the paragraph after it, its first line at the same
+  indent, does not read as one more item.
+* A footnote marker stays on the line of the words before it: no line
+  breaks between them (a marker after "hand?" could start the next line),
+  and no space is left before the comma between touching markers.
+* A note set with its own mark (`#footnote(numbering: (..) => "*")[...]`)
+  is not counted: the numbers of the notes after it go on. Its mark is set
+  larger than a number (in the text and before the note), taking no room.
+* A chapter's place in the work's own divisions: `#metadata((part: [..],
+  sections: [..])) <kicker>` before a chapter (matched to the chapter it
+  stands before; a chapter may have none) sets "part · sections" over its title, in the space above
+  it (no text moves), groups the contents under each part with the
+  sections beside the page, and puts the part in the left-hand running
+  head instead of the book's title (Gouge's treatises).
+* A section heading's PDF bookmark leaves out its notes' text (a hidden
+  copy without the notes carries it); the contents put a chapter's
+  sections and page on its title's last line, where the leaders end.
+* A paragraph after a block set off (`#block(inset: (x: 1em))[...]`) keeps
+  its first-line indent, as one after a list does.
+
 ## 0.14.0
 
 2026-10-26

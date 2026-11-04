@@ -259,6 +259,30 @@
   })
 })
 
+// Content without its footnotes (a heading's words for its PDF bookmark).
+#let strip-notes(c) = {
+  if type(c) != content { return c }
+  if c.func() == footnote { return [] }
+  if c.has("children") { return c.children.map(strip-notes).join() }
+  if c.func() == emph { return emph(strip-notes(c.body)) }
+  if c.func() == strong { return strong(strip-notes(c.body)) }
+  c
+}
+
+// A heading's hidden copy without its notes, carrying its PDF bookmark.
+#let bookmark-copy(it) = place(hide[#heading(level: it.level, outlined: false,
+  bookmarked: true, strip-notes(it.body)) <bookmark-only>])
+
+// The <kicker> of the chapter whose heading is at loc: the one set after
+// the chapter before it (a chapter without one, a dedication, has none)
+#let kicker-at(loc) = {
+  let sel = selector(<kicker>).before(loc)
+  let prev = query(selector(heading.where(level: 2)).before(loc, inclusive: false))
+  if prev.len() > 0 { sel = sel.after(prev.last().location()) }
+  let ks = query(sel)
+  if ks.len() > 0 { ks.last().value }
+}
+
 #let book(
   // The book's title.
   title: [Book title],
@@ -411,6 +435,19 @@
   let end-with-par(it) = { it; v(-0.78em); par(first-line-indent: 0pt, box(height: 0pt)) }
   show enum: end-with-par
   show list: end-with-par
+  // and so does one after a block set off (#block(inset: (x: 1em))[...]:
+  // Gouge's propositions, Owen's arguments)
+  show block.where(inset: (left: 1em, right: 1em)): end-with-par
+
+  // Every list starts at a paragraph's first-line indent, so its numbers
+  // never stand left of the paragraphs around it; one that belongs to a
+  // numbered point sets its own indent further in (colophon's indent: 24pt).
+  set enum(indent: 12pt)
+  set list(indent: 12pt)
+  // and has half a line's space above and below it, so a paragraph after it,
+  // its first line at the same indent, does not read as its next item
+  show enum: set block(above: 1.28em, below: 1.28em)
+  show list: set block(above: 1.28em, below: 1.28em)
 
   // A list inside a list item is set one step further in (Gouge's "4. Good
   // will" and its four points, a brace in 1622): at the item's text it lines
@@ -419,6 +456,8 @@
   let nested-in(it) = {
     show enum: set enum(indent: 1.2em)
     show list: set list(indent: 1.2em)
+    show enum: set block(above: 0.78em, below: 0.78em)
+    show list: set block(above: 0.78em, below: 0.78em)
     it
   }
   show enum: nested-in
@@ -441,7 +480,22 @@
   // superscript comma (223,224): an invisible mark after each marker, and a
   // marker set straight after the previous one's mark (or one space on)
   // gets the comma.
+  // A note's own mark (Gouge's *) is set larger than a number, in the text
+  // and at the foot, so it is found at a glance
+  show footnote.entry: it => if type(it.note.numbering) == function {
+    show "*": set text(1.6em, baseline: 0.35em, top-edge: 0pt, bottom-edge: 0pt)
+    it
+  } else { it }
   show footnote: it => {
+    // (its lines keep their height: the larger mark takes no room)
+    show "*": s => if type(it.numbering) == function {
+      text(1.6em, baseline: 0.35em, top-edge: 0pt, bottom-edge: 0pt, s)
+    } else { s }
+    // A marker stays on the line of the words it follows: the space before
+    // it goes, and a word joiner keeps a line from breaking there (after
+    // "hand?" or "commonwealth?" a marker could start the next line)
+    h(0pt, weak: true)
+    "\u{2060}"
     context {
       let prev = query(selector(<fn-end>).before(here(), inclusive: false))
       if prev.len() > 0 {
@@ -456,6 +510,9 @@
     }
     it
     [#metadata(none)<fn-end>]
+    // a note set with its printed mark (#footnote(numbering: (..) => "*")[..],
+    // Gouge's * references) is not counted: the numbers go on past it
+    if type(it.numbering) == function { counter(footnote).update(n => n - 1) }
   }
 
   // Start with a chapter outline.
@@ -488,12 +545,33 @@
       // Indent if level 1 headings exist
       let indent = if has-h1 { 1.5em } else { 0em }
 
-      pad(left: indent, link(loc)[
-        #title
-        #box(width: 1fr, it.fill)
-        #loc.page()
-        #linebreak()
-      ])
+      // chapters with a <kicker> are listed under its part (a treatise),
+      // each with its sections
+      let k = kicker-at(loc)
+      let prev = if idx != none and idx > 0 { kicker-at(all-h2.at(idx - 1).location()) }
+      let part = if type(k) == dictionary { k.at("part", default: none) }
+      if part != none and (type(prev) != dictionary or prev.at("part", default: none) != part) {
+        v(0.8em, weak: true)
+        text(tracking: 0.04em, smallcaps(part))
+        linebreak()
+      }
+      let secs = if type(k) == dictionary { k.at("sections", default: none) }
+      if secs == none {
+        pad(left: indent, link(loc)[
+          #title
+          #box(width: 1fr, it.fill)
+          #loc.page()
+          #linebreak()
+        ])
+      } else {
+        // the sections in a column of their own before the page
+        // on a title's last line, where its leaders end
+        pad(left: indent + 1em, link(loc, grid(columns: (1fr, 4.6em, 1.8em),
+          align: (left, right + bottom, right + bottom),
+          [#title #box(width: 1fr, it.fill)],
+          text(0.9em, style: "italic", secs),
+          str(loc.page()))))
+      }
     }
     outline(title: [Chapters], depth: 2)
   }
@@ -548,7 +626,12 @@
       if short-title != none {
         set text(0.9em)
         let chapter-header = smallcaps(short-title)
-        let book-title = smallcaps(title)
+        // a chapter with a <kicker> part (Gouge's treatise) has it on the
+        // left-hand page, so it can be found from any page
+        let ch = query(selector(heading.where(level: 2)).before(here()))
+        let kick = if ch.len() > 0 { kicker-at(ch.last().location()) }
+        let part = if type(kick) == dictionary { kick.at("part", default: none) }
+        let book-title = smallcaps(if part != none { part } else { title })
         set heading(numbering: "1.1")
         show heading.where(level: 1): it => pagebreak(weak: true) + it
         // A running head is one line: a title too long for it (small
@@ -615,14 +698,34 @@
       h(7pt, weak: true)
     }
 
-    v(5%)
+    // A chapter's place in the work's own divisions, from its
+    // #metadata((part: [..], sections: [..])) <kicker> (set before the
+    // chapter it belongs to; a chapter may have none), set in the space above
+    // the title so the chapter's text does not move. Gouge's chapters are
+    // the edition's; his treatises and numbered sections are what his
+    // references name ("Treat. 4. §. 2.")
     set par(justify: false)
-    align(center, text(22pt, weight: 700, hyphenate: false, [#number#it.body]))
+    context {
+      let k = kicker-at(it.location())
+      let line = if type(k) == dictionary {
+        let bits = ()
+        if k.at("part", default: none) != none { bits.push(smallcaps(k.part)) }
+        if k.at("sections", default: none) != none { bits.push(emph(k.sections)) }
+        if bits.len() > 0 { align(center, text(10pt, tracking: 0.03em, bits.join([ · ]))) }
+      }
+      v(5%)
+      align(center, {
+        // placed over the title, taking no room of its own
+        if line != none { place(top + center, dy: -(measure(line).height + 1.2em), line) }
+        text(22pt, weight: 700, hyphenate: false, [#number#it.body])
+      })
+    }
     v(2.5em)
   }
 
   // Configure level 3 headings.
   show heading.where(level: 3): it => {
+    if it.at("label", default: none) == <bookmark-only> { return none }
     let number = if it.numbering != none {
       counter(heading).display(it.numbering)
       h(7pt, weak: true)
@@ -631,25 +734,39 @@
     v(1em)
     // sticky: kept on the page of the text after it, never left at the foot
     // of a page; spaced as the paragraph it used to be
-    block(sticky: true, above: 0.78em, below: 0.78em,
-      text(1.2em, weight: 600, [#number #it.body]))
+    block(sticky: true, above: 0.78em, below: 0.78em, {
+      bookmark-copy(it)
+      text(1.2em, weight: 600, [#number #it.body])
+    })
     v(0.75em)
   }
 
   // Configure level 4 headings.
   show heading.where(level: 4): it => {
+    if it.at("label", default: none) == <bookmark-only> { return none }
     let number = if it.numbering != none {
       counter(heading).display(it.numbering)
       h(7pt, weak: true)
     }
 
     v(0.75em)
-    block(sticky: true, above: 0.78em, below: 0.78em,
-      text(11pt, weight: 700, [#number #it.body]))
+    block(sticky: true, above: 0.78em, below: 0.78em, {
+      bookmark-copy(it)
+      text(11pt, weight: 700, [#number #it.body])
+    })
     v(0.4em)
   }
 
   show heading: set text(11pt, weight: 400)
+
+  // A section heading's PDF bookmark is its words without its notes (Typst
+  // would run a note's text on after the heading's, Gouge vol. III p. 117):
+  // its own bookmark is off, and a hidden copy without the notes, labelled
+  // <bookmark-only> and set inside the heading's block (so on its page),
+  // carries it. Show rules of a book's own leave the copy be.
+  show heading.where(level: 3): set heading(bookmarked: false)
+  show heading.where(level: 4): set heading(bookmarked: false)
+
 
   // Aligned text is not justified or hyphenated: a centered paragraph is
   // centered line by line, a signature set right is ragged on the left.
