@@ -259,6 +259,20 @@
   })
 })
 
+// Content without its footnotes (a heading's words for its PDF bookmark).
+#let strip-notes(c) = {
+  if type(c) != content { return c }
+  if c.func() == footnote { return [] }
+  if c.has("children") { return c.children.map(strip-notes).join() }
+  if c.func() == emph { return emph(strip-notes(c.body)) }
+  if c.func() == strong { return strong(strip-notes(c.body)) }
+  c
+}
+
+// A heading's hidden copy without its notes, carrying its PDF bookmark.
+#let bookmark-copy(it) = place(hide[#heading(level: it.level, outlined: false,
+  bookmarked: true, strip-notes(it.body)) <bookmark-only>])
+
 // The <kicker> of the chapter whose heading is at loc: the one set after
 // the chapter before it (a chapter without one, a dedication, has none)
 #let kicker-at(loc) = {
@@ -551,10 +565,12 @@
         ])
       } else {
         // the sections in a column of their own before the page
+        // on a title's last line, where its leaders end
         pad(left: indent + 1em, link(loc, grid(columns: (1fr, 4.6em, 1.8em),
+          align: (left, right + bottom, right + bottom),
           [#title #box(width: 1fr, it.fill)],
-          align(right, text(0.9em, style: "italic", secs)),
-          align(right, str(loc.page())))))
+          text(0.9em, style: "italic", secs),
+          str(loc.page()))))
       }
     }
     outline(title: [Chapters], depth: 2)
@@ -709,6 +725,7 @@
 
   // Configure level 3 headings.
   show heading.where(level: 3): it => {
+    if it.at("label", default: none) == <bookmark-only> { return none }
     let number = if it.numbering != none {
       counter(heading).display(it.numbering)
       h(7pt, weak: true)
@@ -717,25 +734,39 @@
     v(1em)
     // sticky: kept on the page of the text after it, never left at the foot
     // of a page; spaced as the paragraph it used to be
-    block(sticky: true, above: 0.78em, below: 0.78em,
-      text(1.2em, weight: 600, [#number #it.body]))
+    block(sticky: true, above: 0.78em, below: 0.78em, {
+      bookmark-copy(it)
+      text(1.2em, weight: 600, [#number #it.body])
+    })
     v(0.75em)
   }
 
   // Configure level 4 headings.
   show heading.where(level: 4): it => {
+    if it.at("label", default: none) == <bookmark-only> { return none }
     let number = if it.numbering != none {
       counter(heading).display(it.numbering)
       h(7pt, weak: true)
     }
 
     v(0.75em)
-    block(sticky: true, above: 0.78em, below: 0.78em,
-      text(11pt, weight: 700, [#number #it.body]))
+    block(sticky: true, above: 0.78em, below: 0.78em, {
+      bookmark-copy(it)
+      text(11pt, weight: 700, [#number #it.body])
+    })
     v(0.4em)
   }
 
   show heading: set text(11pt, weight: 400)
+
+  // A section heading's PDF bookmark is its words without its notes (Typst
+  // would run a note's text on after the heading's, Gouge vol. III p. 117):
+  // its own bookmark is off, and a hidden copy without the notes, labelled
+  // <bookmark-only> and set inside the heading's block (so on its page),
+  // carries it. Show rules of a book's own leave the copy be.
+  show heading.where(level: 3): set heading(bookmarked: false)
+  show heading.where(level: 4): set heading(bookmarked: false)
+
 
   // Aligned text is not justified or hyphenated: a centered paragraph is
   // centered line by line, a signature set right is ragged on the left.

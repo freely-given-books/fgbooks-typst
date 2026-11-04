@@ -23,6 +23,9 @@
   it (no text moves), groups the contents under each part with the
   sections beside the page, and puts the part in the left-hand running
   head instead of the book's title (Gouge's treatises).
+* A section heading's PDF bookmark leaves out its notes' text (a hidden
+  copy without the notes carries it); the contents put a chapter's
+  sections and page on its title's last line, where the leaders end.
 * A paragraph after a block set off (`#block(inset: (x: 1em))[...]`) keeps
   its first-line indent, as one after a list does.
 
